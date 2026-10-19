@@ -1,0 +1,86 @@
+name: Compila programa Python
+
+on:
+  push:
+  workflow_dispatch:
+
+jobs:
+  build-linux:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Instalar PyInstaller
+        run: pip install pyinstaller
+      - name: Compilar
+        run: pyinstaller --onefile comprova_desplegaments.py
+      - name: Guardar executable
+        uses: actions/upload-artifact@v4
+        with:
+          name: executable-linux
+          path: dist/
+
+  build-macos:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Instalar PyInstaller
+        run: pip install pyinstaller
+      - name: Compilar
+        run: pyinstaller --onefile comprova_desplegaments.py
+      - name: Guardar executable
+        uses: actions/upload-artifact@v4
+        with:
+          name: executable-macos
+          path: dist/
+
+  build-windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Instalar PyInstaller
+        run: pip install pyinstaller
+      - name: Compilar
+        run: pyinstaller --onefile comprova_desplegaments.py
+      - name: Guardar executable
+        uses: actions/upload-artifact@v4
+        with:
+          name: executable-windows
+          path: dist/
+
+  test:
+    needs: [build-linux, build-macos, build-windows]
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - runner: ubuntu-latest
+            artifact: executable-linux
+            executable: ./dist/comprova_desplegaments
+          - runner: macos-latest
+            artifact: executable-macos
+            executable: ./dist/comprova_desplegaments
+          - runner: windows-latest
+            artifact: executable-windows
+            executable: ./dist/comprova_desplegaments.exe
+    runs-on: ${{ matrix.runner }}
+    steps:
+      - name: Descargar executable
+        uses: actions/download-artifact@v4
+        with:
+          name: ${{ matrix.artifact }}
+          path: dist/
+      - name: Probar executable
+        shell: bash
+        env:
+          EXECUTABLE: ${{ matrix.executable }}
+        run: |
+          "$EXECUTABLE" --help
