@@ -73,11 +73,16 @@ jobs:
             executable: ./dist/comprova_desplegaments.exe
     runs-on: ${{ matrix.runner }}
     steps:
-      - name: Descargar executable
+       - name: Descargar executable
         uses: actions/download-artifact@v4
         with:
           name: ${{ matrix.artifact }}
           path: dist/
+
+      - name: Dar permisos de ejecución
+        if: runner.os != 'Windows'
+        run: chmod +x dist/comprova_desplegaments
+
       - name: Probar executable
         shell: bash
         env:
