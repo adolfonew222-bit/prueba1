@@ -1,4 +1,5 @@
 https://chatgpt.com/share/6ad69bc0-fc14-83ed-aaa2-5a820ccdc3ea
+https://chatgpt.com/share/6ad69ead-357c-83ed-b25c-2245578eef0f
 name: Compila programa Python
 
 on:
