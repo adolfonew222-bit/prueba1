@@ -1,3 +1,4 @@
+
 name: Compila programa Python
 
 on:
@@ -9,13 +10,17 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
+
       - name: Instalar PyInstaller
         run: pip install pyinstaller
+
       - name: Compilar
         run: pyinstaller --onefile comprova_desplegaments.py
+
       - name: Guardar executable
         uses: actions/upload-artifact@v4
         with:
@@ -26,13 +31,17 @@ jobs:
     runs-on: macos-latest
     steps:
       - uses: actions/checkout@v4
+
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
+
       - name: Instalar PyInstaller
         run: pip install pyinstaller
+
       - name: Compilar
         run: pyinstaller --onefile comprova_desplegaments.py
+
       - name: Guardar executable
         uses: actions/upload-artifact@v4
         with:
@@ -43,13 +52,17 @@ jobs:
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v4
+
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
+
       - name: Instalar PyInstaller
         run: pip install pyinstaller
+
       - name: Compilar
         run: pyinstaller --onefile comprova_desplegaments.py
+
       - name: Guardar executable
         uses: actions/upload-artifact@v4
         with:
@@ -71,9 +84,11 @@ jobs:
           - runner: windows-latest
             artifact: executable-windows
             executable: ./dist/comprova_desplegaments.exe
+
     runs-on: ${{ matrix.runner }}
+
     steps:
-       - name: Descargar executable
+      - name: Descargar executable
         uses: actions/download-artifact@v4
         with:
           name: ${{ matrix.artifact }}
