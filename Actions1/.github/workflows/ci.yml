@@ -1,0 +1,89 @@
+name: Compilar i Provar Script
+
+on: [push]
+
+jobs:
+  build-linux:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Copiar repositori
+        uses: actions/checkout@v4
+
+      - name: Configurar Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Instal·lar dependència PyInstaller
+        run: pip install pyinstaller
+
+      - name: Generar executable
+        run: pyinstaller --onefile comprova_desplegaments.py
+
+      - name: Pujar artefacte Linux
+        uses: actions/upload-artifact@v4
+        with:
+          name: executable-linux
+          path: dist/comprova_desplegaments
+
+  build-macos:
+    runs-on: macos-latest
+    steps:
+      - name: Copiar repositori
+        uses: actions/checkout@v4
+
+      - name: Configurar Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Instal·lar dependència PyInstaller
+        run: pip install pyinstaller
+
+      - name: Generar executable
+        run: pyinstaller --onefile comprova_desplegaments.py
+
+      - name: Pujar artefacte macOS
+        uses: actions/upload-artifact@v4
+        with:
+          name: executable-macos
+          path: dist/comprova_desplegaments
+
+  build-windows:
+    runs-on: windows-latest
+    steps:
+      - name: Copiar repositori
+        uses: actions/checkout@v4
+
+      - name: Configurar Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Instal·lar dependència PyInstaller
+        run: pip install pyinstaller
+
+      - name: Generar executable
+        run: pyinstaller --onefile comprova_desplegaments.py
+
+      - name: Pujar artefacte Windows
+        uses: actions/upload-artifact@v4
+        with:
+          name: executable-windows
+          path: dist/comprova_desplegaments.exe
+
+  test-executable:
+    needs: build-linux
+    runs-on: ubuntu-latest
+    steps:
+      - name: Descarregar executable de Linux
+        uses: actions/download-artifact@v4
+        with:
+          name: executable-linux
+          path: ./dist
+
+      - name: Donar permisos d'execució
+        run: chmod +x ./dist/comprova_desplegaments
+
+      - name: Comprovar que funciona
+        run: ./dist/comprova_desplegaments httpbin.org/status/200
